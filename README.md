@@ -154,7 +154,7 @@ The manuscript reports the following headline test-period results: streamflow NS
 
 ## Limitations
 
-The manuscript identifies several limitations that are important when interpreting this repository:
+This project identifies several limitations when interpreting this repository:
 
 - gridMET is model-derived and may have interpolation uncertainty in complex Appalachian terrain.
 - The current workflow is primarily temporal and does not explicitly model soil, land-cover, or topographic heterogeneity.
@@ -162,6 +162,3 @@ The manuscript identifies several limitations that are important when interpreti
 - Bootstrapped augmentation cannot guarantee realistic conditions beyond the historical range.
 - A three-year held-out period and seven gauges may not represent all hydrological variability in the region.
 
-## Citation
-
-The manuscript file currently contains placeholder author and affiliation fields. Complete those fields before publishing a formal citation for this work.
