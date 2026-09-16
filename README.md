@@ -2,7 +2,7 @@
 
 Machine-learning workflow for streamflow forecasting flood and drought identification in the Central Appalachian Region (HUC 0505, the Kanawha-New River watershed).
 
-The accompanying manuscript, [`huc0505_manuscript_9_14_2026.docx`](huc0505_manuscript_9_14_2026.docx), describes the scientific motivation, methods, results, limitations, and future research directions for this workflow.
+The accompanying manuscript, [`huc0505_manuscript_9_14_2026.docx`](huc0505_manuscript_9_14_2026.docx) (available soon), describes the scientific motivation, methods, results, limitations, and future research directions for this workflow.
 
 ## Study Overview
 
