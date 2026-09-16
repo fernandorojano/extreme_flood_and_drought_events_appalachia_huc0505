@@ -1,6 +1,6 @@
-# Agricultural Flood and Drought Risk Assessment in HUC 0505
+# Identification of Flood and Drought Events in HUC 0505
 
-Machine-learning workflow for streamflow forecasting and agricultural flood and drought risk assessment in the Central Appalachian Region (HUC 0505, the Kanawha-New watershed).
+Machine-learning workflow for streamflow forecasting flood and drought identification in the Central Appalachian Region (HUC 0505, the Kanawha-New River watershed).
 
 The accompanying manuscript, [`huc0505_manuscript_9_14_2026.docx`](huc0505_manuscript_9_14_2026.docx), describes the scientific motivation, methods, results, limitations, and future research directions for this workflow.
 
@@ -16,7 +16,7 @@ The project combines daily USGS streamflow observations with daily 4 km gridMET 
 - Coal River at Tornado, WV (`03200500`)
 - Kanawha River at Charleston, WV (`03198000`)
 
-The analysis covers 2000-2025. It is designed to support agricultural decisions affected by hydrological extremes, including planting delays, irrigation scheduling, livestock protection, and crop and forage risk management.
+The analysis covers 2000-2025. It is designed to support identification of extreme floowd and drought events eventually assisting growers in planting delays, irrigation scheduling, livestock protection, and crop and forage risk management.
 
 ## Research Questions
 
@@ -25,8 +25,8 @@ The workflow evaluates whether a compact, physically motivated feature set and c
 1. Forecast daily streamflow across multiple gauges.
 2. Detect high-flow flood conditions and low-precipitation drought conditions.
 3. Improve learning from rare extreme-event observations through synthetic samples.
-4. Provide calibrated prediction intervals for risk-aware decisions.
-5. Connect predicted events with seasonal agricultural decision windows.
+4. Provide calibrated prediction intervals.
+5. Connect predicted events to eventually assist agriculture.
 
 ## Methods
 
@@ -38,7 +38,7 @@ The workflow evaluates whether a compact, physically motivated feature set and c
 
 ### Feature engineering
 
-The v4 feature pipeline creates 20 input features using:
+The current pipeline creates 20 input features using:
 
 - Streamflow and precipitation lags at 1, 3, 7, 14, and 30 days.
 - Rolling means, standard deviations, and cumulative precipitation statistics.
@@ -47,11 +47,11 @@ The v4 feature pipeline creates 20 input features using:
 - 30- and 90-day SPEI-style water-balance measures.
 - Reference evapotranspiration and other gridMET predictors.
 
-Flood and drought labels are threshold-based. Flood days are associated with streamflow above the Q95 threshold, while drought days use a low monthly precipitation threshold described in the manuscript.
+Flood and drought labels were threshold-based. Flood days were associated with streamflow above the Q95 threshold, while drought days used the 10th percentile (P10) of monthly 30-day cumulative precipitation.
 
 ### Data augmentation
 
-[`14b_gen_augment_v4.py`](14b_gen_augment_v4.py) augments rare-event records using resampling and correlated Gaussian perturbations. Flood and drought records receive different scaling treatments, and compound drought-to-flood cases are also generated. Synthetic rows are marked with a `synthetic` column so they can be distinguished from observations.
+[`14b_gen_augment_v4.py`](14b_gen_augment_v4.py) augmented rare-event records using resampling and correlated Gaussian perturbations. Flood and drought records received different scaling treatments, and compound drought-to-flood cases were also generated. Synthetic rows were marked with a `synthetic` column so they can be distinguished from observations.
 
 ### Models and validation
 
@@ -62,12 +62,12 @@ The modeling workflow uses scikit-learn models for four tasks:
 - Random forest classification for drought detection.
 - Quantile gradient boosting for 90% streamflow prediction intervals.
 
-Validation is chronological rather than randomly shuffled:
+Validation was chronological rather than randomly shuffled:
 
 - Training: 2000-2022.
-- Held-out testing: 2023-2025.
+- Testing: 2023-2025.
 
-Reported metrics include NSE, KGE, log-NSE, RMSE, PBIAS, correlation, ROC-AUC, average precision, F1, recall, precision, empirical interval coverage, interval width, and Winkler score.
+Reported metrics included NSE, KGE, log-NSE, RMSE, PBIAS, correlation, ROC-AUC, average precision, F1, recall, precision, empirical interval coverage, interval width, and Winkler score.
 
 ## Repository Workflow
 
@@ -77,7 +77,7 @@ Run the scripts from the repository root in the following order:
 2. [`11b_extend_to_2025.py`](11b_extend_to_2025.py) extends streamflow and gridMET data through 2025.
 3. [`18_add_gauge_03193000.py`](18_add_gauge_03193000.py) adds or rebuilds the gridMET series for gauge `03193000` when that gauge is missing from the existing grid assignment.
 4. [`13c_build_features_v4.py`](13c_build_features_v4.py) joins streamflow and climate data and writes `data/features_gridmet_v4.csv`.
-5. [`14b_gen_augment_v4.py`](14b_gen_augment_v4.py) creates `data/features_augmented_v4.csv`.
+5. [`14b_gen_augment_v4.py`](14b_gen_augment_v4.py) creates with augmented data through bootstrapping `data/features_augmented_v4.csv`.
 6. [`15c_ml_train_v4.py`](15c_ml_train_v4.py) trains the forecasting and classification models and writes model files, `data/predictions_v4.csv`, and `data/metrics_v4.json`.
 7. [`15d_fullperiod_preds_v4.py`](15d_fullperiod_preds_v4.py) generates full-period predictions in `data/predictions_full_v4.csv`.
 8. [`16c_figures_v4.py`](16c_figures_v4.py) creates the manuscript figures in `figures/`.
@@ -105,7 +105,8 @@ models/                     # Serialized trained models
 figures/                    # Manuscript figures and diagnostics
 ```
 
-Generated data, models, and figures are not included in this repository snapshot. Create the directories before running the pipeline if a script does not create them automatically.
+Generated data, models, and figures were not included in this repository
+.. Create the directories before running the pipeline if a script does not create them automatically.
 
 ## Environment
 
@@ -144,7 +145,7 @@ The data-acquisition scripts require an internet connection and access to the US
 
 The test period must remain held out from training and augmentation. Do not augment or resample the 2023-2025 observations when reproducing the reported evaluation. Because the workflow downloads live public data and contains hard-coded paths and script-specific assumptions, rerunning it may produce different intermediate files or metrics unless the source data, package versions, random seeds, and configuration are fixed.
 
-The manuscript reports the following headline test-period results: streamflow NSE of 0.832 and KGE of 0.893, flood ROC-AUC of 0.991 with 94.4% recall, drought ROC-AUC of 0.992 with 94.2% recall, and 92.1% empirical coverage for nominal 90% prediction intervals. These values are manuscript results and should be independently reproduced before being used as operational performance guarantees.
+The project reports the following headline test-period results: streamflow NSE of 0.832 and KGE of 0.893, flood ROC-AUC of 0.991 with 94.4% recall, drought ROC-AUC of 0.992 with 94.2% recall, and 92.1% empirical coverage for nominal 90% prediction intervals. 
 
 ## Data Sources
 
@@ -158,7 +159,7 @@ This project identifies several limitations when interpreting this repository:
 
 - gridMET is model-derived and may have interpolation uncertainty in complex Appalachian terrain.
 - The current workflow is primarily temporal and does not explicitly model soil, land-cover, or topographic heterogeneity.
-- The drought label is a simplified precipitation-based threshold rather than a long-baseline operational SPI/SPEI product.
+- The drought label is a simplified precipitation-based threshold.
 - Bootstrapped augmentation cannot guarantee realistic conditions beyond the historical range.
 - A three-year held-out period and seven gauges may not represent all hydrological variability in the region.
 
